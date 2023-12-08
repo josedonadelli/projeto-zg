@@ -2,43 +2,44 @@ package com.zg.erguei_as_maos.controllers;
 
 
 import com.zg.erguei_as_maos.services.MusicaService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@Controller
-
+@RestController
+@RequestMapping("/")
 public class MusicaController {
     @Autowired
     MusicaService musicaService;
 
-    @RequestMapping("/")
-    public String teste() throws IOException {
 
-        System.out.println(musicaService.carregarMusica());
-
-        return "inicio";
-
-    }
 
     //Escolha de parte da musica: 0-Música completa | 1-Primeira parte apenas | 2-Segunda parte apenas
-    @RequestMapping("/parte")
-    public String parte(@RequestParam(required = false) int parte) throws IOException {
-        String musica = musicaService.carregarMusica();
-        if(parte == 0 ){
-            System.out.println( musica);
-           // return musica;
-        } else if (parte > 0 && parte<=2) {
-            System.out.println( musicaService.escolheParte(musica, parte));
-           // return musicaService.escolheParte(musica, parte);
+    @Operation(summary = "Retorna a musica (ou a parte escolhida da musica) Erguei as Maos ", description = "Para incluir as falas do padre, altere 'falasPadre' para 1 " +
+            "  Para escolher a musica altere 'parteMusica' para:  0 - musica completa; 1 - Primeira parte da musica; 2 - Segunda part da musica")
+    @GetMapping("/parte")
+    public ResponseEntity<String>  parte(@RequestParam(defaultValue = "0") int parteMusica, @RequestParam(defaultValue = "0") int falasPadre) throws IOException {
+        String musica;
+        if(falasPadre == 0){
+         musica = musicaService.removeParenteses(musicaService.carregarMusica());
+        }   else{
+            musica = musicaService.carregarMusica();
         }
-       // System.out.println("Entrou");
-
-        return "inicio";
+        if(parteMusica == 0 ){
+            return ResponseEntity.ok(musica);
+        }
+        if (parteMusica > 0 && parteMusica<=2) {
+            return ResponseEntity.ok(musicaService.escolheParte(musica, parteMusica));
+        }
+        if (parteMusica == 3){
+            System.out.println(musicaService.removeParenteses(musica));
+            return ResponseEntity.ok(musicaService.removeParenteses(musica));
+        }
+        return ResponseEntity.notFound().build();
     }
 
 }
