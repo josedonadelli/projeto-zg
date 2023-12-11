@@ -19,15 +19,17 @@ public class MusicaController {
 
 
     //Escolha de parte da musica: 0-Música completa | 1-Primeira parte apenas | 2-Segunda parte apenas
-    @Operation(summary = "Retorna a musica (ou a parte escolhida da musica) Erguei as Maos ", description = "Para incluir as falas do padre, altere 'falasPadre' para 1 " +
+    @Operation(summary = "Retorna a musica (ou a parte escolhida da musica) Erguei as Maos ", description = "Para opcao generalista sem as falas do padre: altere 'generalizado' para 1. Para incluir as falas do padre na versao completa, altere 'falasPadre' para 1 " +
             "  Para escolher a musica altere 'parteMusica' para:  0 - musica completa; 1 - Primeira parte da musica; 2 - Segunda part da musica")
     @GetMapping("/parte")
-    public ResponseEntity<String>  parte(@RequestParam(defaultValue = "0") int parteMusica, @RequestParam(defaultValue = "0") int falasPadre) throws IOException {
+    public ResponseEntity<String>  parte(@RequestParam(defaultValue = "0") int parteMusica, @RequestParam(defaultValue = "0") int falasPadre, @RequestParam(defaultValue = "0") int generalizado) throws IOException {
         String musica;
+
+
         if(falasPadre == 0){
-         musica = musicaService.removeParenteses(musicaService.carregarMusica());
+         musica = musicaService.removeParenteses(musicaService.carregarMusica(generalizado));
         }   else{
-            musica = musicaService.carregarMusica();
+            musica = musicaService.carregarMusica(generalizado);
         }
         if(parteMusica == 0 ){
             return ResponseEntity.ok(musica);

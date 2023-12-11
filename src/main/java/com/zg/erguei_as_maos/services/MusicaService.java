@@ -9,10 +9,15 @@ import java.io.IOException;
 @Service
 public class MusicaService {
 
-//1 - carregar musica no programa
-    public String carregarMusica() throws IOException {
-    FileReader fr = new FileReader(
-            "/Users/Guest/Documents/workspace/projeto-zg-main/src/main/resources/files/erguei as maos.txt");
+//1 - carregar musica
+    public String carregarMusica(int generalizado) throws IOException {
+        String path;
+        if (generalizado == 0){
+            path = "src/main/resources/files/erguei as maos.txt";
+        }else {
+            path = "src/main/resources/files/erguei as maos - generalizado.txt";
+        }
+    FileReader fr = new FileReader(path);
     String musica="";
     int i;
         while ((i = fr.read()) != -1)
@@ -35,8 +40,6 @@ public class MusicaService {
 
     public String removeParenteses(String musica){
         return musica.replaceAll("\\([^)]*\\)", "");
-
-
     }
 }
 
